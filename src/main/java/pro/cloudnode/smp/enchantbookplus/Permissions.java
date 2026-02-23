@@ -5,16 +5,17 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public final class Permissions {
-    public static @NotNull String enchant(final @NotNull Enchantment enchantment) {
+    public final static String RELOAD = "enchantbookplus.reload";
+
+    public static String enchant(final Enchantment enchantment) {
         return "enchantbookplus.enchant." + enchantment.getKey().getKey();
     }
 
-    public final static @NotNull String RELOAD = "enchantbookplus.reload";
-
-    public static void init(final @NotNull EnchantBookPlus plugin) {
+    public static void init(final EnchantBookPlus plugin) {
         final PluginManager pm = plugin.getServer().getPluginManager();
 
         pm.addPermission(new Permission(
@@ -23,13 +24,12 @@ public final class Permissions {
                 PermissionDefault.OP
         ));
 
-        for (Enchantment enchantment : Registry.ENCHANTMENT)
+        for (Enchantment enchantment : Registry.ENCHANTMENT) {
             pm.addPermission(new Permission(
                     enchant(enchantment),
-                    "Allow enchanting "
-                            + enchantment.getKey()
-                            + "above the vanilla level, as configured in the plugin",
+                    "Allow enchanting " + enchantment.getKey() + "above the vanilla level, as configured in the plugin",
                     PermissionDefault.TRUE
             ));
+        }
     }
 }
