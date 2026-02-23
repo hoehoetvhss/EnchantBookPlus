@@ -2,8 +2,8 @@ package pro.cloudnode.smp.enchantbookplus;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import pro.cloudnode.smp.enchantbookplus.event.PrepareAnvil;
 
 import java.util.ArrayList;
@@ -13,7 +13,17 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+@NullMarked
 public final class EnchantBookPlus extends JavaPlugin {
+    /**
+     * Config enchantments cache
+     */
+    private List<ConfigEnchantmentEntry> configEnchantments = new ArrayList<>();
+    /**
+     * "ALL" enchantment cache
+     */
+    private ConfigEnchantmentEntry.@Nullable AllConfigEnchantmentEntry allConfigEnchantment;
+
     /**
      * Register event listeners.
      */
@@ -24,24 +34,14 @@ public final class EnchantBookPlus extends JavaPlugin {
     /**
      * Config enchantments cache
      */
-    private @NotNull List<@NotNull ConfigEnchantmentEntry> configEnchantments = new ArrayList<>();
-
-    /**
-     * Config enchantments cache
-     */
-    @NotNull List<@NotNull ConfigEnchantmentEntry> getConfigEnchantments() {
+    private List<ConfigEnchantmentEntry> getConfigEnchantments() {
         return configEnchantments;
     }
 
     /**
      * "ALL" enchantment cache
      */
-    private @Nullable ConfigEnchantmentEntry.AllConfigEnchantmentEntry allConfigEnchantment;
-
-    /**
-     * "ALL" enchantment cache
-     */
-    public @NotNull Optional<ConfigEnchantmentEntry.AllConfigEnchantmentEntry> getAllConfigEnchantment() {
+    public Optional<ConfigEnchantmentEntry.AllConfigEnchantmentEntry> getAllConfigEnchantment() {
         return Optional.ofNullable(allConfigEnchantment);
     }
 
@@ -50,14 +50,12 @@ public final class EnchantBookPlus extends JavaPlugin {
      *
      * @param enchantment The Minecraft enchantment
      */
-    public @NotNull Optional<@NotNull ConfigEnchantmentEntry> getConfigEnchantment(final @NotNull Enchantment enchantment) {
+    public Optional<ConfigEnchantmentEntry> getConfigEnchantment(final Enchantment enchantment) {
         final Optional<ConfigEnchantmentEntry> entry = getConfigEnchantments().stream()
                 .filter(c -> c.isEnchantment(enchantment))
                 .findFirst();
 
-        return entry.isEmpty()
-                ? getAllConfigEnchantment().map(a -> a.enchant(enchantment))
-                : entry;
+        return entry.isEmpty() ? getAllConfigEnchantment().map(a -> a.enchant(enchantment)) : entry;
     }
 
     /**
@@ -70,8 +68,7 @@ public final class EnchantBookPlus extends JavaPlugin {
 
         try {
             enchants = ConfigEnchantmentEntry.config(getConfig().get("enchantments"));
-        }
-        catch (final IllegalArgumentException | IndexOutOfBoundsException | ClassCastException exception) {
+        } catch (final IllegalArgumentException | IndexOutOfBoundsException | ClassCastException exception) {
             getLogger().log(Level.SEVERE, "Failed to load config", exception);
             getServer().getPluginManager().disablePlugin(this);
             return;
