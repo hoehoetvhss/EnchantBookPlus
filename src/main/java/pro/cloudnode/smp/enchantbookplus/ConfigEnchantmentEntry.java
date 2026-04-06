@@ -125,6 +125,7 @@ public class ConfigEnchantmentEntry {
      *
      * @param configValue Config object array
      */
+    @SuppressWarnings("unchecked")
     public static List<ConfigEnchantmentEntry> configArray(final ArrayList<Map<String, Object>> configValue)
             throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
         return configValue.stream().map(ConfigEnchantmentEntry::configValue).collect(Collectors.toList());

@@ -118,24 +118,18 @@ public final class PrepareAnvil implements Listener {
             return;
         }
 
+        final ItemStack resultStack = result.get().clone();
         inventory.setRepairCost(inventory.getRepairCost() + cost);
 
         for (final Map.Entry<Enchantment, Integer> entry : upgrades.entrySet()) {
-            if (result.get().getItemMeta() instanceof final EnchantmentStorageMeta resultMeta) {
-                if (!resultMeta.getStoredEnchants().containsKey(entry.getKey())) {
-                    continue;
-                }
-
+            if (resultStack.getItemMeta() instanceof final EnchantmentStorageMeta resultMeta) {
                 resultMeta.addStoredEnchant(entry.getKey(), entry.getValue(), true);
-
-                result.get().setItemMeta(resultMeta);
+                resultStack.setItemMeta(resultMeta);
             } else {
-                if (!result.get().getEnchantments().containsKey(entry.getKey())) {
-                    continue;
-                }
-
-                result.get().addUnsafeEnchantment(entry.getKey(), entry.getValue());
+                resultStack.addUnsafeEnchantment(entry.getKey(), entry.getValue());
             }
         }
+
+        event.setResult(resultStack);
     }
 }

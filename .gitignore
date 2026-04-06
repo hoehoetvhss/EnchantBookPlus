@@ -1,3 +1,7 @@
 target/
 .run/
 *.iml
+build/
+.gradle/
+.DS_Store
+Thumbs.db

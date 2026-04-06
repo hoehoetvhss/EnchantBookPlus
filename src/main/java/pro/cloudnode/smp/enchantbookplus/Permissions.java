@@ -18,18 +18,33 @@ public final class Permissions {
     public static void init(final EnchantBookPlus plugin) {
         final PluginManager pm = plugin.getServer().getPluginManager();
 
-        pm.addPermission(new Permission(
-                RELOAD,
-                "Reload plugin config using ‘/enchantbookplus reload’",
-                PermissionDefault.OP
-        ));
+        if (pm.getPermission(RELOAD) == null) {
+            pm.addPermission(new Permission(
+                    RELOAD,
+                    "Reload plugin config using ‘/enchantbookplus reload’",
+                    PermissionDefault.OP
+            ));
+        }
 
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            pm.addPermission(new Permission(
-                    enchant(enchantment),
-                    "Allow enchanting " + enchantment.getKey() + "above the vanilla level, as configured in the plugin",
-                    PermissionDefault.TRUE
-            ));
+            final String name = enchant(enchantment);
+            if (pm.getPermission(name) == null) {
+                pm.addPermission(new Permission(
+                        name,
+                        "Allow enchanting " + enchantment.getKey() + "above the vanilla level, as configured in the plugin",
+                        PermissionDefault.TRUE
+                ));
+            }
+        }
+    }
+
+    public static void remove(final EnchantBookPlus plugin) {
+        final PluginManager pm = plugin.getServer().getPluginManager();
+
+        pm.removePermission(RELOAD);
+
+        for (Enchantment enchantment : Registry.ENCHANTMENT) {
+            pm.removePermission(enchant(enchantment));
         }
     }
 }

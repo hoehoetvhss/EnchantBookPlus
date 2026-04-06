@@ -97,6 +97,7 @@ public final class EnchantBookPlus extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        Permissions.remove(this);
         allConfigEnchantment = null;
         configEnchantments.clear();
     }
