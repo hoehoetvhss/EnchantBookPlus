@@ -1,8 +1,11 @@
-name: Maven Release
+name: Gradle Release
 
 on:
   release:
     types: [published]
+
+permissions:
+  contents: write
 
 jobs:
   publish:
@@ -13,12 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
         with:
-          java-version: 16
+          java-version: 17
           distribution: temurin
-          cache: maven
+          cache: gradle
 
       - name: Get release version from tag
         run: |
@@ -26,17 +29,16 @@ jobs:
           echo "VERSION=${TAG#v}" >> $GITHUB_OUTPUT
         id: version
 
-      - name: Set project release version
-        run: mvn -B versions:set -DnewVersion=${{ steps.version.outputs.VERSION }} -DgenerateBackupPoms=false
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: Build and package Maven project
-        run: mvn -B clean package --file pom.xml
+      - name: Build and package
+        run: ./gradlew -Pversion=${{ steps.version.outputs.VERSION }} clean build
 
       - name: Upload to release
-        uses: cloudnode-pro/release-upload-asset@v1
+        uses: softprops/action-gh-release@v2
         with:
-          gh-token: ${{ github.token }}
-          files: target/EnchantBookPlus-${{ steps.version.outputs.VERSION }}.jar; type=application/java-archive
+          files: build/libs/EnchantBookPlus-${{ steps.version.outputs.VERSION }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,5 +60,7 @@ jobs:
             1.19.x
             1.20.x
             1.21.x
-          files: target/EnchantBookPlus-${{ steps.version.outputs.VERSION }}.jar
+            26.x
+          files: build/libs/EnchantBookPlus-${{ steps.version.outputs.VERSION }}.jar
           dependencies: '[{"project_id":"N4CZEMrg","dependency_type":"optional"}]'
+
